@@ -1,5 +1,5 @@
 var mysql = require('mysql');
-var dbConfig = require('./DBConfig');
+var dbConfig = require('../DBConfig');
 var userSQL = require('./userSql');
 
 // 使用DBConfig.js的配置信息创建一个MySql链接池
@@ -22,19 +22,19 @@ var responseJSON = function (res, ret) {
 function reg (req,res,next){
   pool.getConnection(function (err, connection) {
     // 获取前台页面传过来的参数
-    var param = req.query || req.params;
+    var param = req.body;
     var _res = res;
     var data = {};
     connection.query(userSQL.insert, [param.user_name,param.user_password], function (err, result) {
       console.log(result,err)
       if(result) {
           data.result = {
-            code: 0000,
+            code: '0000',
             msg: '注册成功'
           };
         } else {
           data.result = {
-            code: -1,
+            code: '5000',
             msg: '注册失败'
           };
         }
@@ -48,23 +48,23 @@ function reg (req,res,next){
       connection.release();
   });
 }
-
+// 后台-管理员登陆
 function login (req,res,next) {
   pool.getConnection(function (err, connection) {
     // 获取前台页面传过来的参数
-    var param = req.query || req.params;
+    var param = req.body;
     var _res = res;
     var data = {};
     connection.query(userSQL.insert, [param.user_name,param.user_password], function (err, result) {
       console.log(result,err)
       if(result) {
           data.result = {
-            code: 0000,
+            code: '0000',
             msg: '登录成功'
           };
         } else {
           data.result = {
-            code: 5000,
+            code: '5000',
             msg: '登录失败'
           };
         }
