@@ -26,7 +26,6 @@ function selective (req,res,next){
     var _res = res;
     var data = {};
     connection.query(`select * from article ${param.categoryId?`where categoryId = ${param.categoryId}`:''} ${param.keyword?`where articleTitle like '%${param.keyword}%'`:''}  order by createdTime limit ${param.pageSize} offset ${(param.page-1)*param.pageSize} `, function (err, result) {
-      console.log(result,err)
       if(result) {
           data.result = {
             code: '0000',
@@ -35,6 +34,12 @@ function selective (req,res,next){
               list:result
             }
           };
+          connection.query(`select count(*) from article where isDelete=0`,(err,result)=>{
+            console.log(result)
+            if(result) { 
+              data.result.data.total = result[0]['count(*)']
+            }
+          })
         } else {
           data.result = {
             code: '5000',

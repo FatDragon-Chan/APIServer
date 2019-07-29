@@ -76,7 +76,7 @@ function login (req,res,next) {
       },300);
       // 释放链接
       connection.release();
-  })
+  }) 
 }
 
 module.exports={
