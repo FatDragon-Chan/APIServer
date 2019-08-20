@@ -1,3 +1,4 @@
+var  _ =  require('lodash')
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
@@ -10,6 +11,52 @@ var usersRouter = require('./routes/users');
 var blogRouter = require('./routes/blog');
 
 var app = express();
+// 判断origin是否在域名白名单列表中
+function isOriginAllowed(origin, allowedOrigin) {
+  if (_.isArray(allowedOrigin)) {
+      for(let i = 0; i < allowedOrigin.length; i++) {
+          if(isOriginAllowed(origin, allowedOrigin[i])) {
+              return true;
+          }
+      }
+      return false;
+  } else if (_.isString(allowedOrigin)) {
+      return origin === allowedOrigin;
+  } else if (allowedOrigin instanceof RegExp) {
+      return allowedOrigin.test(origin);
+  } else {
+      return !!allowedOrigin;
+  }
+}
+// 域名白名单
+const ALLOW_ORIGIN = [  
+  'http://localhost:6900',
+  'https://www.chenzian.cn',
+  'https://chenzian.cn',
+  'https://m.chenzian.cn',
+  'https://flsh.top',
+  'http://192.168.99.13:6900/'
+];
+// cros 
+app.use('*',function (req, res, next) {
+  let reqOrigin = req.headers.origin;  // request响应头的origin属性
+  
+  console.log(reqOrigin)
+  //  判断请求是否在域名白名单内
+   if(isOriginAllowed(reqOrigin, ALLOW_ORIGIN)) {
+    reqOrigin = 'https://chenzian.cn'
+  } 
+  console.log(reqOrigin)
+  res.header('Access-Control-Allow-Origin', reqOrigin); //这个表示任意域名都可以访问，这样写不能携带cookie了。
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Content-Length, Authorization, Accept, X-Requested-With , yourHeaderFeild');
+  res.header('Access-Control-Allow-Methods', 'PUT, POST, GET, DELETE, OPTIONS');//设置方法
+  if (req.method == 'OPTIONS') {
+    res.send(200); // 意思是，在正常的请求之前，会发送一个验证，是否可以请求。
+  }
+  else {
+    next();
+  }
+});
 
 // post middleWare
 app.use(bodyParser.urlencoded({
