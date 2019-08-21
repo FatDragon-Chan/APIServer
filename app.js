@@ -40,10 +40,8 @@ const ALLOW_ORIGIN = [
 // cros 
 app.use('*',function (req, res, next) {
   let reqOrigin = req.headers.origin;  // request响应头的origin属性
-  
-  console.log(reqOrigin)
   //  判断请求是否在域名白名单内
-   if(isOriginAllowed(reqOrigin, ALLOW_ORIGIN)) {
+   if(!isOriginAllowed(reqOrigin, ALLOW_ORIGIN)) {
     reqOrigin = 'https://chenzian.cn'
   } 
   console.log(reqOrigin)
