@@ -3,7 +3,7 @@ var dbConfig = require('../DBConfig');
 var userSQL = require('./userSql');
 
 // 使用DBConfig.js的配置信息创建一个MySql链接池
-var pool = mysql.createPool( dbConfig.mysql );
+var pool = mysql.createPool( dbConfig.user );
 
 // 响应一个JSON数据
 var responseJSON = function (res, ret) {

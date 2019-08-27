@@ -2,6 +2,23 @@ var express = require('express');
 var router = express.Router();
 var blogHttp = require('../db/blogConnection/blogConnection')
 
+var checkSign = require('../utils/sign');
+
+// md5验证 sign
+router.use(function (req, response, next) {
+  // 如果签名获取不对,返回签名状态异常
+  if (!req.body.sign || !checkSign(req.body)) {
+    response.status(200).json({
+      result:{
+        responseCode:'5000',
+        responseMsg:'签名错误'
+      }
+    });
+    return false;
+  }
+  next()
+})
+
 // 博客-分页查询文章表格
 router.post('/selective',function(req,res,next){
   blogHttp.selective(req,res,next)
