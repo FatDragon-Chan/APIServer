@@ -1,85 +1,68 @@
-var mysql = require('mysql');
-var dbConfig = require('../DBConfig');
-var userSQL = require('./userSql');
+// 引入res工具类
+var {responseJSON,query} = require('../../utils/res')
+var Md5  =  require('js-md5')
+// token延长
+function prolongToken () {
 
-// 使用DBConfig.js的配置信息创建一个MySql链接池
-var pool = mysql.createPool( dbConfig.user );
-
-// 响应一个JSON数据
-var responseJSON = function (res, ret) {
-  console.log('响应JSON数据')
-  if (typeof ret === 'undefined') {
-    res.json({
-        code: '5000',
-        msg: '操作失败'
-    });
-  } else {
-    res.json(ret);
-  }
-};
-
-// 后台-管理员注册
-function reg (req,res,next){
-  pool.getConnection(function (err, connection) {
-    // 获取前台页面传过来的参数
-    var param = req.body;
-    var _res = res;
-    var data = {};
-    connection.query(userSQL.insert, [param.user_name,param.user_password], function (err, result) {
-      console.log(result,err)
-      if(result) {
-          data.result = {
-            code: '0000',
-            msg: '注册成功'
-          };
-        } else {
-          data.result = {
-            code: '5000',
-            msg: '注册失败'
-          };
-        }
-      })  
-      if(err) data.err = err;
-      // 以json形式，把操作结果返回给前台页面
-      setTimeout(function () {
-        responseJSON(_res, data)
-      },300);
-      // 释放链接
-      connection.release();
-  });
-}
-// 后台-管理员登陆
-function login (req,res,next) {
-  pool.getConnection(function (err, connection) {
-    // 获取前台页面传过来的参数
-    var param = req.body;
-    var _res = res;
-    var data = {};
-    connection.query(userSQL.insert, [param.user_name,param.user_password], function (err, result) {
-      console.log(result,err)
-      if(result) {
-          data.result = {
-            code: '0000',
-            msg: '登录成功'
-          };
-        } else {
-          data.result = {
-            code: '5000',
-            msg: '登录失败'
-          };
-        }
-      })  
-      if(err) data.err = err;
-      // 以json形式，把操作结果返回给前台页面
-      setTimeout(function () {
-        responseJSON(_res, data)
-      },300);
-      // 释放链接
-      connection.release();
-  }) 
 }
 
+// token生成
+function upDateToken (udid) {
+  query(`UPDATE user set token = '${token}' where user_id = '${udid}'`)
+}
+
+
+/* 模块功能逻辑实现 */
 module.exports={
-  reg,
-  login
+// 后台-管理员注册
+reg: (req,res,next) => {
+  // 获取前台页面传过来的参数
+  var param = req.body
+  var _res = res
+  var result = {}
+  query(`INSERT INTO user (user_name,user_password)  VALUES ('${param.username}','${param.password}')`).then(res => {
+    if(res) {
+      result = {
+        message: '注册成功'
+      };
+    } else {
+      result = {
+        errorMsg:'注册失败'
+      }
+    }
+    responseJSON(_res,result)
+  }).catch(err => {
+    responseJSON(_res)
+  })
+},
+
+// 后台-管理员登录
+login: (req,res,next) => {
+  var param = req.body
+  var _res = res
+  let result = {}
+  query(`select * from user where user_name = '${param.username}' and user_password = '${param.password}'`).then(res => {
+    if (res.length > 0) {
+      return upDateToken(res[0].user_id)
+    }else {
+      result.errorMsg = '用户名或密码错误,请检查后重试'
+      return result
+    }
+  }).then(res => {
+    console.log('token',res)
+    result = {
+      message:'登陆成功',
+      data:{
+        token
+      }
+    }
+  }).catch(err => {
+    responseJSON(_res)
+  })
+  setTimeout(() => {
+    responseJSON(_res,result)
+  }, 100);
+}
+
+
 }

@@ -35,16 +35,18 @@ const ALLOW_ORIGIN = [
   'https://chenzian.cn',
   'https://m.chenzian.cn',
   'https://flsh.top',
-  'http://192.168.99.13:6900/'
+  'http://192.168.99.13:6900',
+  'http://localhost:9528',
+  'http://192.168.99.13:9528'
 ];
 // cros 
 app.use('*',function (req, res, next) {
   let reqOrigin = req.headers.origin;  // request响应头的origin属性
+  
   //  判断请求是否在域名白名单内
    if(!isOriginAllowed(reqOrigin, ALLOW_ORIGIN)) {
     reqOrigin = 'https://chenzian.cn'
   } 
-  console.log(reqOrigin)
   res.header('Access-Control-Allow-Origin', reqOrigin); //这个表示任意域名都可以访问，这样写不能携带cookie了。
   res.header('Access-Control-Allow-Headers', 'Content-Type, Content-Length, Authorization, Accept, X-Requested-With , yourHeaderFeild');
   res.header('Access-Control-Allow-Methods', 'PUT, POST, GET, DELETE, OPTIONS');//设置方法
