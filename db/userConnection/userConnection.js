@@ -1,15 +1,6 @@
 // 引入res工具类
-var {responseJSON,query} = require('../../utils/res')
-var Md5  =  require('js-md5')
-// token延长
-function prolongToken () {
+var {responseJSON,query,updateToken} = require('../../utils/res')
 
-}
-
-// token生成
-function upDateToken (udid) {
-  query(`UPDATE user set token = '${token}' where user_id = '${udid}'`)
-}
 
 
 /* 模块功能逻辑实现 */
@@ -20,19 +11,15 @@ reg: (req,res,next) => {
   var param = req.body
   var _res = res
   var result = {}
-  query(`INSERT INTO user (user_name,user_password)  VALUES ('${param.username}','${param.password}')`).then(res => {
-    if(res) {
-      result = {
-        message: '注册成功'
-      };
-    } else {
-      result = {
-        errorMsg:'注册失败'
-      }
-    }
+  query(`INSERT user (user_name,user_password)  VALUES ('${param.username}','${param.password}')`).then(res => {
+    return updateToken(res.insertId)
+  }).then(res => {
+    result.message = '注册成功'
     responseJSON(_res,result)
   }).catch(err => {
-    responseJSON(_res)
+    console.log(err.err)
+    result.error = err.errorMsg || '注册失败'
+    responseJSON(_res,result)
   })
 },
 
@@ -43,7 +30,7 @@ login: (req,res,next) => {
   let result = {}
   query(`select * from user where user_name = '${param.username}' and user_password = '${param.password}'`).then(res => {
     if (res.length > 0) {
-      return upDateToken(res[0].user_id)
+      return updateToken(res[0].user_id)
     }else {
       result.errorMsg = '用户名或密码错误,请检查后重试'
       return result
@@ -56,12 +43,10 @@ login: (req,res,next) => {
         token
       }
     }
+    responseJSON(_res,result)
   }).catch(err => {
     responseJSON(_res)
   })
-  setTimeout(() => {
-    responseJSON(_res,result)
-  }, 100);
 }
 
 
