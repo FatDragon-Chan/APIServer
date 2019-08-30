@@ -18,8 +18,17 @@ var {checkTokenTime} = require('../utils/res')
 //   next()
 // })
 
-/* 需要验证token */
+// 后台-管理员注册
+router.post('/reg',function(req,res,next){
+  userHttp.reg(req,res,next)
+});
+// 后台-管理员登陆
+router.post('/login',function(req,res,next){
+  userHttp.login(req,res,next)
+})
 
+
+/* 需要token校验 */
 router.use(function (req, response, next) {
   if (!req.body.token) {
     response.status(200).json({
@@ -28,8 +37,8 @@ router.use(function (req, response, next) {
     });
     return false
   }else {
-    checkTokenTime('e8563859406016963356c1088dfeb0e0').then(res => {
-      if (!res) {
+    checkTokenTime(req.body.token).then(res => {
+      if (!res.affectedRows) {
         response.status(200).json({
           responseCode:'1006',
           responseMsg:'登陆过期,请重新登录'
@@ -40,20 +49,6 @@ router.use(function (req, response, next) {
     })
   }
 })
-
-/* 不需要验证token */
-
-// 后台-管理员注册
-router.post('/reg',function(req,res,next){
-  userHttp.reg(req,res,next)
-});
-
-// 后台-管理员登陆
-router.post('/login',function(req,res,next){
-  userHttp.login(req,res,next)
-})
-
-
 
 
 
