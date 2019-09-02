@@ -6,8 +6,9 @@ var checkSign = require('../utils/sign');
 
 // md5验证 sign
 router.use(function (req, response, next) {
+  var param = req.body
   // 如果签名获取不对,返回签名状态异常
-  if (!req.body.sign || !checkSign(req.body)) {
+  if (!param.sign || !checkSign(param)) {
     response.status(200).json({
       result:{
         responseCode:'5000',

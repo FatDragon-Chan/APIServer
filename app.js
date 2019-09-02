@@ -62,8 +62,14 @@ app.use('*',function (req, res, next) {
 app.use(bodyParser.urlencoded({
   extended:false
 }));
-
+app.use(bodyParser.text());
 app.use(bodyParser.json());
+app.use(function(req,res,next) {
+  if (req.headers['content-type'].indexOf('text/plain') !== -1) {
+    req.body =JSON.parse(req.body)
+  }
+  next()
+})
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');

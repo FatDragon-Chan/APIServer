@@ -5,7 +5,8 @@ var {responseJSON,query} = require('../../utils/res')
 /* 分页查询文章数据 */
 function selective (req,res,next) {
   // 获取前台页面传过来的参数
-  var param = req.body;
+  var param = req.body
+  console.log(param)
   var _res = res;
   var result = {};
   query(`select count(*) from article where isDelete=0  ${param.categoryId?`and  categoryId = ${param.categoryId}`:''} ${param.keyword?`and  articleTitle like '%${param.keyword}%'`:''} ${param.tagId?`and find_in_set(${param.tagId}, tagIds)`:''}`).then(res => {

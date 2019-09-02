@@ -7,7 +7,7 @@ function reg (req,res,next) {
   var param = req.body
   var _res = res
   var result = {}
-  query(`INSERT user (user_name,user_password)  VALUES ('${param.username}','${param.password}')`).then(res => {
+  query(`INSERT user (user_name,user_password,create_time)  VALUES ('${param.username}','${param.password}',NOW())`).then(res => {
     return updateToken(res.insertId)
   }).then(res => {
     result.message = '注册成功'
@@ -39,9 +39,19 @@ function login (req,res,next) {
   })
 }
 
-
+/* 后台-获取管理员信息 */
+function getInfo (req,res,next) {
+  var param = req.body
+  var _res = res
+  var result = {}
+  console.log(param)
+  query(`select a.user_name, b.role_name,b.role_id from user a join role b on a.user_role_id = b.role_id where token = '${param.token}'`).then(res => {
+    console.log(res)
+  })
+}
 module.exports={
   reg,
-  login
+  login,
+  getInfo
 
 }

@@ -2,11 +2,13 @@ var express = require('express');
 var router = express.Router();
 var userHttp = require('../db/userConnection/userConnection')
 var {checkTokenTime} = require('../utils/res')
+var checkSign = require('../utils/sign');
 
 // md5验证 sign
 // router.use(function (req, response, next) {
-//   // 如果签名获取不对,返回签名状态异常
-//   if (!req.body.sign || !checkSign(req.body)) {
+//  var param = req.body
+// //  如果签名获取不对,返回签名状态异常
+//  if (!param.sign || !checkSign(param)) {
 //     response.status(200).json({
 //       result:{
 //         responseCode:'5000',
@@ -50,7 +52,10 @@ router.use(function (req, response, next) {
   }
 })
 
-
+// 后台-管理员信息获取
+router.post('/getInfo',function(req,res,next){
+  userHttp.getInfo(req,res,next)
+})
 
 
 
