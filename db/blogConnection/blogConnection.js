@@ -9,7 +9,7 @@ function selective (req,res,next) {
   console.log(param)
   var _res = res;
   var result = {};
-  query(`select count(*) from article where isDelete=0  ${param.categoryId?`and  categoryId = ${param.categoryId}`:''} ${param.keyword?`and  articleTitle like '%${param.keyword}%'`:''} ${param.tagId?`and find_in_set(${param.tagId}, tagIds)`:''}`).then(res => {
+  query(`select count(*) from article where ${param.status ?` status = ${param.status}`:'1=1'}   ${param.categoryId?`and  categoryId = ${param.categoryId}`:''} ${param.keyword?`and  articleTitle like '%${param.keyword}%'`:''} ${param.tagId?`and find_in_set(${param.tagId}, tagIds)`:''}`).then(res => {
     if (!res) {
       result.error =  '文章总数查询失败'
     }else {
@@ -28,7 +28,7 @@ function selective (req,res,next) {
         param.page = totalPage
         result.data.isLastPage = true
       }
-      query(`select * from article ${param.categoryId?` where categoryId = ${param.categoryId}`:''} ${param.keyword?`where articleTitle like '%${param.keyword}%'`:''} ${param.tagId?`where find_in_set(${param.tagId}, tagIds)`:''} order by createdTime limit ${param.pageSize} offset ${(param.page-1)*param.pageSize}`).then(subres => {
+      query(`select * from article where ${param.status ?` status = ${param.status}`:'1=1'} ${param.categoryId?` and categoryId = ${param.categoryId}`:''} ${param.keyword?`and articleTitle like '%${param.keyword}%'`:''} ${param.tagId?`and find_in_set(${param.tagId}, tagIds)`:''} order by createdTime limit ${param.pageSize} offset ${(param.page-1)*param.pageSize}`).then(subres => {
         if (!subres) {
           result.error = '分页查询失败'
         }else {

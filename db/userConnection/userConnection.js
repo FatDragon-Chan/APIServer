@@ -44,14 +44,37 @@ function getInfo (req,res,next) {
   var param = req.body
   var _res = res
   var result = {}
-  console.log(param)
-  query(`select a.user_name, b.role_name,b.role_id from user a join role b on a.user_role_id = b.role_id where token = '${param.token}'`).then(res => {
-    console.log(res)
+  query(`select a.user_name,a.avatar,b.role_name,b.role_id from user a join role b on a.user_role_id = b.role_id where token = '${param.token}'`).then(res => {
+    if (res.length) {
+      result.message = '获取用户信息成功'
+      result.data = {
+        ...res[0]
+      }
+    }else {
+      result.error = '获取用户信息失败'
+    }
+    responseJSON(_res,result)
+  }).catch(err => {
+    responseJSON(_res)
+  })
+}
+
+/* 后台-登出 */
+function logout (req,res,next) {
+  var param = req.body
+  var _res = res
+  var result = {}
+  query(`UPDATE user SET token = '' WHERE token = '${param.token}'`).then(res => {
+    result.message = '退出成功'
+    responseJSON(_res,result)
+  }).catch(err => {
+    responseJSON(_res)
   })
 }
 module.exports={
   reg,
   login,
-  getInfo
+  getInfo,
+  logout
 
 }

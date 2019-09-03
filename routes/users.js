@@ -57,6 +57,11 @@ router.post('/getInfo',function(req,res,next){
   userHttp.getInfo(req,res,next)
 })
 
+// 后台-管理员退出
+router.post('/logout',function(req,res,next){
+  userHttp.logout(req,res,next)
+})
+
 
 
 module.exports = router;
