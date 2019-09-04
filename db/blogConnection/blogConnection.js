@@ -2,8 +2,9 @@
 var {responseJSON,query} = require('../../utils/res')
 // 使用DBConfig.js的配置信息创建一个MySql链接池
 
-/* 分页查询文章数据 */
-function selective (req,res,next) {
+module.exports = {
+  /* 分页查询文章数据 */
+  selective:function (req,res,next) {
   // 获取前台页面传过来的参数
   var param = req.body
   console.log(param)
@@ -44,10 +45,10 @@ function selective (req,res,next) {
   }).catch (err => {
     responseJSON(_res)
   })
-}
+},
 
 /* 分页查询分类及标签数据 */
-function getAllClassify (req,res,next) {
+getAllClassify:function  (req,res,next) {
   var param = req.body
   var _res = res
   var result = {
@@ -79,9 +80,4 @@ function getAllClassify (req,res,next) {
     responseJSON(_res,result)
   }, 300);
 }
-
-
-module.exports={
-  selective,
-  getAllClassify
 }

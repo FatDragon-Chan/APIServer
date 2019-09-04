@@ -5,10 +5,10 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var bodyParser = require('body-parser');
-
 // var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var blogRouter = require('./routes/blog');
+var utilsRouter = require('./routes/utils');
 
 var app = express();
 // 判断origin是否在域名白名单列表中
@@ -85,7 +85,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 // router
 // app.use('/', indexRouter) ;
 app.use('/users',usersRouter);
-app.use('/blog',blogRouter) 
+app.use('/blog',blogRouter);
+app.use('/utils',utilsRouter);
 
 
 // catch 404 and forward to error handler
