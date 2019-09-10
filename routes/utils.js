@@ -4,9 +4,10 @@ const qiniu = require('qiniu')
 const formidable = require('formidable')
 var {responseJSON,query,updateToken,checkTokenTime} = require('../utils/res')
 var qiniuConfig = require( "../qiniu");
+
 /* 需要token校验 */
 router.use(function (req, response, next) {
-  let token = req.headers.authorization
+  let token = req.body.token
   if (!token) {
     response.status(200).json({
       responseCode:'1006',
@@ -26,6 +27,33 @@ router.use(function (req, response, next) {
     })
   }
 })
+
+// 七牛云获取上传token
+router.post('/getUploadToken',function(req,res,next){
+  let _res =res
+  let result = {}
+  try{
+    let accessKey = qiniuConfig.accessKey  // 源码删除:七牛云获取 ak,必须配置
+    let secretKey = qiniuConfig.secretKey  // 源码删除:七牛云获取 sk, 必须配置
+    let mac = new qiniu.auth.digest.Mac(accessKey, secretKey)
+    let options = {
+      scope: qiniuConfig.scope,  // 对应七牛云存储空间名称
+      expires: 7200 //token过期时间
+    };
+    let putPolicy = new qiniu.rs.PutPolicy(options);
+    let uploadToken = putPolicy.uploadToken(mac);
+    result.message='获取上传token成功'
+    result.data = {
+      uploadToken
+    }
+    console.log(result)
+    responseJSON(_res,result)
+  }catch(error) {
+    responseJSON(_res)
+  }
+});
+
+
 
 // 七牛云上传
 router.post('/uploadImg',function(req,res,next){
@@ -66,6 +94,8 @@ router.post('/uploadImg',function(req,res,next){
     responseJSON(_res)
   }
 });
+
+
 
 
 

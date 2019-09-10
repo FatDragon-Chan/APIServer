@@ -19,6 +19,7 @@ module.exports={
       responseJSON(_res,result)
     })
   },
+
   /* 后台-管理员登录 */
   login:function  (req,res,next) {
     var param = req.body
@@ -39,6 +40,7 @@ module.exports={
       responseJSON(_res)
     })
   },
+
   /* 后台-获取管理员信息 */
   getInfo :function  (req,res,next) {
     var param = req.body
@@ -98,6 +100,23 @@ module.exports={
     }).catch(err => {
       responseJSON(_res)
     })
-  }
+  },
+
+
+  /* 新增or编辑文章 */
+  addOrUpdateArticle: function (req,res,next) {
+    console.log('update',req.body)
+    let param = req.body
+    let _res =res
+    let result = {}
+    console.log(param)
+    query(`insert into article (articleId,articleTitle,articleMainMap,tagIds,articleDesc,categoryId,article_detail,is_original,createdTime)  values(${param.articleId},${param.articleTitle},${param.articleMainMap},${param.tagIds},${param.articleDesc},${param.categoryId},${param.article_detail},${param.is_original},now()) ) ON DUPLICATE key update articleTitle=${param.articleTitle},articleMainMap=${param.articleMainMap},tagIds=${param.tagIds},articleDesc=${param.articleDesc},categoryId=${param.categoryId},article_detail=${param.article_detail},is_original=${param.is_original},update_time=now()`).then(res => {
+      console.log(res)
+    }).catch(err => {
+      responseJSON(_res)
+    })
+    // query(`replace into article(articleId,articleTitle,articleMainMap,tagIds,articleDesc,categoryId,article_detail,is_original,createdTime)
+    //  values(${param.articleId},${param.articleTitle},${param.articleMainMap},${param.tagIds},${param.articleDesc},${param.categoryId},${param.article_detail},${param.is_original},now()) `)
+  },
 
 }

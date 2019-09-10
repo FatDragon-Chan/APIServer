@@ -30,10 +30,9 @@ router.post('/getAllClassify',function(req,res,next){
   blogHttp.getAllClassify(req,res,next)
 });
 
-
-// 后台-管理员登陆
-// router.post('/login',function(req,res,next){
-//   blogHttp.login(req,res,next)
-// })
+// 博客-根据文章id获取文章详情
+router.post('/getArticleFromId',function(req,res,next) {
+  blogHttp.getArticleFromId(req,res,next)
+})
 
 module.exports = router;
